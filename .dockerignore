@@ -26,7 +26,6 @@ staticfiles/
 
 # Django compressor CACHE files
 CACHE/
-output.css
 vids/
 
 # Node.js files

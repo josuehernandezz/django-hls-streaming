@@ -19,8 +19,8 @@ touch .env
 echo "🔐 Generating secure Django SECRET_KEY..."
 echo "SECRET_KEY='$(openssl rand -base64 64 | tr -d '\n')'" > .env
 
-echo "⚙️ Setting DEBUG=True for development..."
-echo "DEBUG=True" >> .env
+echo "⚙️ Setting DEBUG=False for development..."
+echo "DEBUG=False" >> .env
 
 echo "🏷️ Setting PROJECT_NAME=Django HLS Stream..."
 echo "PROJECT_NAME=Django HLS Stream" >> .env

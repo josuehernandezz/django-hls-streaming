@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+ {% comment %} Include Video.js CSS  {% endcomment %}
+<link href="https://vjs.zencdn.net/7.14.3/video-js.css" rel="stylesheet">
+ {% comment %} Include Video.js JavaScript  {% endcomment %}
+<script src="https://vjs.zencdn.net/7.14.3/video.js"></script>
+<link href="https://unpkg.com/@videojs/themes@1/dist/city/index.css" rel="stylesheet" />
+<link href="https://unpkg.com/@videojs/themes@1/dist/forest/index.css" rel="stylesheet"/>
+
+{% endblock %}
+
+{% block content_no_style %}
+<div class="relative">
+
+     {% comment %} Video Player (initially hidden)  {% endcomment %}
+    <div id="video-player" class="hidden w-full h-full">
+        <video id="hls-video" class="video-js vjs-theme-forest">
+             {% comment %} HLS source URL  {% endcomment %}
+            <source src="{{ hls_url }}" type="application/x-mpegURL">
+             {% comment %} Fallback for non-supported browsers  {% endcomment %}
+            <p class="vjs-no-js">
+                To view this video, please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video
+            </p>
+        </video>
+    </div>
+
+    <div id="video-loading" class="hidden h-[50vh] md:h-[60vh]">
+        <div role="status" class="flex items-center justify-center w-full h-full bg-gray-300 rounded-lg animate-pulse dark:bg-gray-700">
+            <svg class="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 20">
+                <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.98 2.98 0 0 0 .13 5H5Z"/>
+                <path d="M14.066 0H7v5a2 2 0 0 1-2 2H0v11a1.97 1.97 0 0 0 1.934 2h12.132A1.97 1.97 0 0 0 16 18V2a1.97 1.97 0 0 0-1.934-2ZM9 13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2Zm4 .382a1 1 0 0 1-1.447.894L10 13v-2l1.553-1.276a1 1 0 0 1 1.447.894v2.764Z"/>
+            </svg>
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+        
+    <div id="image-container">
+        {% if video.thumbnail %}
+            <img 
+                class="w-full object-contain object-top opacity-70 dark:opacity-60 rounded-t-lg aspect-video transition-opacity duration-300" 
+                src="{{ video.thumbnail.url }}" 
+                alt="{{ image_description }}">
+        {% else %}
+            <div 
+                class="w-full aspect-video rounded-t-lg bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center opacity-70 dark:opacity-60 transition-opacity duration-300">
+                <svg class="w-10 h-10 text-zinc-400 dark:text-zinc-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M14 6H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Zm7 11-6-2V9l6-2v10Z" />
+                </svg>
+            </div>
+        {% endif %}
+    </div>
+
+    <div id="image-overlay-container" class="h-full md:h-auto md:ml-5 absolute w-full md:w-1/2 top-0 md:top-5 lg:top-10 left-0 z-10 p-6 backdrop-blur-md dark:backdrop-blur-sm backdrop-brightness-110 dark:backdrop-brightness-50 rounded space-y-2">
+        <h1 class="text-zinc-950 dark:text-white text-2xl md:text-3xl lg:text-4xl">
+            {{ video.name }}
+        </h1>
+
+        <div class="left-0 w-1/3 md:w-2/5">
+            <div class="grid grid-cols-3 gap-5 md:gap-0 lg:gap-0">
+                <p class="text-zinc-900 font-medium dark:text-zinc-500">
+                    {{ video.get_duration }}
+                </p>
+            </div>
+        </div>
+
+        <div class="hidden sm:block left-0">
+            <p class="text-zinc-900 font-medium dark:text-zinc-300 text-left text-sm lg:text-base">
+                {{ video.description }}
+            </p>
+        </div>
+    </div>
+
+     {% comment %} Button centered over the image  {% endcomment %}
+    <div id="start-video-stream" class="absolute top-1/2 sm:top-2/3 left-[45%] sm:left-1/2 lg:transform lg:-translate-x-1/2 lg:-translate-y-1/2 z-30">
+        <button class="p-2 md:p-3 lg:p-5 rounded-full opacity-80 dark:opacity-65 bg-teal-400 hover:opacity-100 transition-opacity">
+            <svg class="w-6 h-6 text-zinc-200 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                <path fill-rule="evenodd" d="M8.6 5.2A1 1 0 0 0 7 6v12a1 1 0 0 0 1.6.8l8-6a1 1 0 0 0 0-1.6l-8-6Z" clip-rule="evenodd"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<div class="lg:flex my-4 mx-5 space-y-2 sm:p-2">
+
+     {% comment %} Div 1  {% endcomment %}
+    <div class="w-full lg:w-1/2">
+        <h2 class="text-zinc-900 dark:text-zinc-200 text-3xl">
+            {{ video.name }}
+        </h2>
+        <div class="py-5">
+            <div class="w-full flex">
+                {% if video.genres.all %}
+                    <div class="w-1/4"> 
+                        <p class="inline text-zinc-900 font-medium dark:text-zinc-500">
+                            Genre:
+                        </p>
+                    </div>
+                    <div class="w-3/4">
+                        {% for genre in video.genres.all %}
+                        <p class="inline text-zinc-900 font-medium hover:text-teal-600 dark:text-teal-400 hover:cursor-pointer">
+                            {{ genre }}{% if not forloop.last %},{% endif %}
+                        </p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="w-full flex">
+                {% if video.release_year %}
+                    <div class="w-1/4"> 
+                        <p class="inline text-zinc-900 font-medium dark:text-zinc-500">
+                            Released:
+                        </p>
+                    </div>
+                    <div class="w-3/4">
+                        <p class="inline text-zinc-900 font-medium hover:text-teal-600 dark:text-teal-400 hover:cursor-pointer">
+                            {{ video.release_year|default:"N/A" }}
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if video.cast is None %}
+            <div class="w-full flex">
+                <div class="w-1/4"> 
+                    <p class="inline text-zinc-900 font-medium dark:text-zinc-500">
+                        Cast:
+                    </p>
+                </div>
+                <div class="w-3/4">
+                    {% for cast_member in video.cast.all %}
+                    <p class="inline text-zinc-900 font-medium hover:text-teal-600 dark:text-teal-400 hover:cursor-pointer">
+                        {{ cast_member }}
+                    </p>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <p class="text-zinc-900 dark:text-zinc-300 m-5">
+                {{ video.description }}
+            </p>
+        </div>
+    </div>
+
+     {% comment %} Div 2  {% endcomment %}
+    <div class="w-full lg:w-1/2 align-middle">
+        <div class="grid grid-cols-1 md:grid-cols-2">
+            {% for video in videos %}
+                {% include 'content/components/movie_list_group.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content_no_style %}
+
+{% block extra_js %}
+<script>
+function isMobileDevice() {
+    // Check if the user is on a mobile device (including iPhone)
+    return /Mobi|Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+}
+
+function isIphone() {
+    // Check if the user is on an iPhone
+    return /iPhone/i.test(navigator.userAgent);
+}
+
+function initializePlayer() {
+    var options = {
+        spatialNavigation: {
+            enabled: true,
+            horizontalSeek: true
+        },
+        controlBar: {
+            fullscreenToggle: true,
+            skipButtons: {
+                forward: 10,  // Skip forward by 10 seconds when the forward button is clicked
+                backward: 10  // Skip backward by 10 seconds when the backward button is clicked
+            }
+        },
+        userActions: {
+            hotkeys: {
+            }
+        },
+        fluid: true,
+        playbackRates: [0.5, 1, 1.5, 2],
+        preferFullWindow: false,
+        autoplay: true,
+        controls: true, // Default to Video.js controls
+        nativeControlsForTouch: true,
+        preload: 'none', // Prevents preloading on all devices
+    };
+
+    // // If it's specifically an iPhone, we can modify the settings further
+    if (isIphone()) {
+        console.log("User is on an iPhone");
+        options.autoplay = false;  // Disable Video.js controls for iPhone
+    }
+
+    // Initialize Video.js with the appropriate settings
+    var player = videojs('hls-video', options);
+}
+
+// Call the function to initialize the player based on device type
+initializePlayer();
+
+    document.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+    });
+</script>
+
+<script>
+    // Add event listener to button click
+    document.getElementById('start-video-stream').addEventListener('click', function() {
+        // Hide the image container
+        document.getElementById('image-container').style.display = 'none';
+        document.getElementById('image-overlay-container').style.display = 'none';
+        
+        // if server returned video
+            document.getElementById('video-player').classList.remove('hidden');
+            document.getElementById('video-player').classList.add('flex');
+        // else
+            // document.getElementById('video-loading').classList.remove('hidden');
+            // document.getElementById('video-loading').classList.add('flex');
+
+        // fetch('{{ hls_url }}') // Replace with your actual server endpoint
+        // .then(response => response.json())
+        // .then(data => {
+        //     if (data.video) { // Assuming the server response contains a "video" property
+        //         document.getElementById('video-player').classList.remove('hidden');
+        //         document.getElementById('video-player').classList.add('flex');
+        //     } else {
+        //         document.getElementById('video-loading').classList.remove('hidden');
+        //         document.getElementById('video-loading').classList.add('flex');
+        //     }
+        // })
+        // .catch(error => {
+        //     console.error('Error fetching data:', error);
+        //     // Optionally handle errors, such as showing a fallback or error message
+        // });
+
+        // document.getElementById('video-container').classList.remove('sm:hidden');
+        
+        // Optionally, you can hide the button as well if you don't want it to show after the video starts
+        document.getElementById('start-video-stream').style.display = 'none';
+    });
+</script>
+{% endblock %}

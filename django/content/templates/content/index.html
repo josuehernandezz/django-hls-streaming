@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex justify-center mt-5 mx-auto space-y-5">
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:mx-2 lg:mx-7 justify-items-center">
+        {% for video in videos %}
+            {% include 'content/components/movie_list_group.html' %}
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock content %}

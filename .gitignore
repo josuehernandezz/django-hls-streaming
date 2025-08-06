@@ -1,0 +1,60 @@
+# Other
+.admin
+.ignore
+
+# Python files
+__pycache__/
+*.py[cod]
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.egg-info/
+*.egg
+
+# Django specific
+*.log
+*.sqlite3
+db.sqlite3
+media/
+collected_static/
+staticfiles/
+
+# Django compressor CACHE files
+CACHE/
+output.css
+vids/
+
+# Node.js files
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment variable files
+.env
+.env.local
+.env.*.local
+
+# Test and coverage reports
+.coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+*.cover
+
+# IDEs and editors
+.idea/
+*.sublime-project
+*.sublime-workspace
+.vscode/
+*.pydevproject
+*.project
+*.classpath
+
+# Operating system files
+.DS_Store
+Thumbs.db

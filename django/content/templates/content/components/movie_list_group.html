@@ -1,0 +1,39 @@
+
+{% load static %}
+<div class="sm:w-full bg-white border border-zinc-200 rounded-lg shadow dark:bg-zinc-800 dark:border-zinc-700 group relative transition-transform duration-500 scale-95 hover:scale-100">
+    {% comment %} Image and text container {% endcomment %}
+    <div class="">
+        <a href="{% url 'movie' video.slug %}">
+            
+            {% if video.thumbnail %}
+                <img class="rounded-t-lg w-full" src="{{ video.thumbnail.url }}" alt=""/>
+            {% else %}
+                <div class="rounded-t-lg w-full aspect-video bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center">
+                    <svg class="w-10 h-10 text-zinc-400 dark:text-zinc-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 6H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Zm7 11-6-2V9l6-2v10Z"/>
+                    </svg>
+                </div>
+            {% endif %}
+
+            <div class="">
+                {% comment %} Text that appears on hover {% endcomment %}
+                <div class="absolute inset-0 flex justify-center items-start p-5 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transform transition-opacity duration-100">
+                    <p class="mb-3 p-2 font-normal text-zinc-900 dark:text-zinc-300 backdrop-blur-md dark:backdrop-blur-sm backdrop-brightness-110 dark:backdrop-brightness-50 rounded shadow-lg">
+                        {{ video.description }}
+                    </p>
+                </div>
+        </a>
+            {% comment %} Movie title {% endcomment %}
+            <div class="p-5">
+                <a href="{% url 'movie' video.slug %}">
+                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        {{ video.name }}
+                    </h5>
+                </a>
+                <p class="dark:text-white">
+                    {{ video.get_duration }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

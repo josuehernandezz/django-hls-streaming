@@ -79,28 +79,12 @@ class Video(models.Model):
 
             # Delete only the .ts segments related to this specific video
             hls_dir = os.path.dirname(hls_playlist_path)  # Get the directory where the HLS files are stored
-            
-            # Iterate through the directory and only delete `.ts` segments related to this video
+
             for filename in os.listdir(hls_dir):
-                # Check if the filename starts with the same base name as the .m3u8 playlist
-                base_name = os.path.splitext(os.path.basename(self.hls))[0]  # e.g., 'video_hls'
-                if filename.startswith(base_name) and filename.endswith('.ts'):  # Match the segments for this video
-                    ts_file_path = os.path.join(hls_dir, filename)
-                    if os.path.exists(ts_file_path):
-                        os.remove(ts_file_path)
-            
+                os.remove(os.path.join(hls_dir, filename))
             if os.path.exists(hls_dir):
                 os.rmdir(hls_dir)
-
         super().delete()
-
-    # def save(self, *args, **kwargs):
-    #     is_new = self.pk is None
-    #     if is_new:
-    #         process_video.delay(self.id)
-    #     # if not self.slug:
-    #     #     self.slug = slugify(self.name)
-    #     super().save(*args, **kwargs)
     
     def save(self, *args, **kwargs):
         is_new = self.pk is None

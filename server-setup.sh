@@ -25,6 +25,14 @@ echo "✅ .env file configured at: .env"
 # 🔐 Install & Setup Docker
 # ---------------------------
 
+echo "🔍 Checking if curl is installed..."
+if ! command -v curl >/dev/null 2>&1; then
+  echo "🚀 Installing curl..."
+  apt-get update && apt-get install -y curl
+else
+  echo "✅ curl is already installed."
+fi
+
 echo "🔍 Checking Docker installation..."
 if ! [ -x "$(command -v docker)" ]; then
   echo "🚀 Installing Docker..."

@@ -11,7 +11,7 @@ def dynamic_og_context(request):
     # Default OG values
     og_title = settings.PROJECT_NAME + " | Stream Video Online"
     og_description = "Upload and stream your own content via adaptive HLS."
-    og_image = request.build_absolute_uri(static('img/logo.jpg'))
+    og_image = request.build_absolute_uri(static('img/favicon.png'))
     og_url = request.build_absolute_uri(path)
 
     # Check if this is a video detail view

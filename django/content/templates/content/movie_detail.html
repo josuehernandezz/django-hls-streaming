@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}{{ video.name|capfirst }} | {{ PROJECT_NAME }}{% endblock %}
+
 {% block header %}
  {% comment %} Include Video.js CSS  {% endcomment %}
 <link href="https://vjs.zencdn.net/7.14.3/video-js.css" rel="stylesheet">

@@ -1,0 +1,15 @@
+[Unit]
+Description=Django HLS Streaming (Docker Compose)
+Requires=docker.service
+After=docker.service
+
+[Service]
+WorkingDirectory=/home/josue/django-hls-streaming
+ExecStart=/usr/bin/docker compose up --build
+ExecStop=/usr/bin/docker compose down
+Restart=always
+RestartSec=5
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

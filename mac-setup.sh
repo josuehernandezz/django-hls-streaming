@@ -60,7 +60,7 @@ python manage.py createsuperuser
 
 echo ""
 echo "🎬==========================================="
-echo "🎬  Flixifi: Upload & Stream Your Video"
+echo "🎬  Django-HLS-Streaming: Upload & Stream Your Video"
 echo "🎬==========================================="
 echo ""
 echo "📤 STEP 1: Upload a video using the Django admin panel"

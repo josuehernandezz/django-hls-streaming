@@ -51,8 +51,9 @@ ALLOWED_HOSTS = [
     '*'
 ]
 
+# UPDATE DURING PRODUCTION
 CSRF_TRUSTED_ORIGINS = [
-    'https://django-hls.josueh.dev',
+    '*',
 ]
 
 # Application definition

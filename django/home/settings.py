@@ -52,7 +52,7 @@ ALLOWED_HOSTS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://flixifi.heusoj.com',
+    'https://django-hls.josueh.dev',
 ]
 
 # Application definition

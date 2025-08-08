@@ -5,6 +5,7 @@ import json
 from django.core.management.base import BaseCommand, CommandError
 from content.models import Video
 from home.settings import MEDIA_ROOT
+from content.utils import resolve_input_path
 
 def get_video_codec(path: str) -> str:
     """Return codec_name of the first video stream, or '' if unknown."""
@@ -45,9 +46,9 @@ class Command(BaseCommand):
             obj.save(update_fields=["errors", "status", "is_running"])
 
             # Paths
-            input_video_rel_path = obj.video.name
-            input_video_path = os.path.join(MEDIA_ROOT, input_video_rel_path)
-
+            # input_video_rel_path = obj.video.name
+            # input_video_path = os.path.join(MEDIA_ROOT, input_video_rel_path)
+            input_video_path = resolve_input_path(obj)
             # Probe duration (same as Celery)
             try:
                 probe = subprocess.run(

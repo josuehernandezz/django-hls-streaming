@@ -173,8 +173,15 @@ STATICFILES_FINDERS = (
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+HOST_FILES_DIR = config("HOST_FILES_DIR", cast=str, default=None)
+print('HOST_FILES_DIR', HOST_FILES_DIR)
 
+ALLOWED_IMPORT_DIRS = [str(Path("/imports").resolve())]
+if HOST_FILES_DIR:
+    ALLOWED_IMPORT_DIRS.append(HOST_FILES_DIR)
 
+ALLOWED_IMPORT_EXTS = [".mp4", ".m4v", ".mov", ".mkv", ".webm"]  # tweak as you like
+print('ALLOWED_IMPORT_DIRS', ALLOWED_IMPORT_DIRS)
 # celery information
 
 # FOR LOCAL

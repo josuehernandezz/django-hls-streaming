@@ -25,6 +25,8 @@ echo "DEBUG=False" >> .env
 echo "🏷️ Setting PROJECT_NAME=Django HLS Stream..."
 echo "PROJECT_NAME=Django HLS Stream" >> .env
 
+echo "HOST_FILES_DIR=" >> .env
+
 echo "✅ .env file configured at: .env"
 
 # ---------------------------

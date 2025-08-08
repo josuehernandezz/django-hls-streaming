@@ -6,6 +6,7 @@ services:
     container_name: django_app
     volumes:
       - ./django:/app
+      - ${HOST_FILES_DIR}:/imports:ro
     env_file:
       - .env
     command: >
@@ -30,6 +31,7 @@ services:
     command: celery -A home worker --loglevel=info
     volumes:
       - ./django:/app
+      - ${HOST_FILES_DIR}:/imports:ro
     env_file:
       - .env
     depends_on:

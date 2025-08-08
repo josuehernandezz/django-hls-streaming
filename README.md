@@ -20,7 +20,7 @@ This application is designed to be performant, secure, and easily extendable —
 
 ---
 
-## 🚀 Live Demo (optional)
+## 🚀 Live Demo
 > 🔗 `https://django-hls.josueh.dev`*
 
 ---
@@ -34,7 +34,7 @@ This application is designed to be performant, secure, and easily extendable —
 | Video Engine | FFmpeg                   |
 | Frontend     | TailwindCSS, Flowbite    |
 | Streaming    | HLS (.m3u8 + .hls chunks) |
-| Dev Tools    | Docker (optional), .env  |
+| Dev Tools    | Docker, docker-compose .env  |
 
 ---
 

@@ -1,14 +1,12 @@
 import os
 import math
 from django.core.exceptions import ValidationError
-from django.db.models.signals import pre_save
-from django.db.models.signals import post_save
-from django.db import transaction
-from django.db import models
+from django.db.models.signals import pre_save, post_save, post_delete
+from django.db import transaction, models
 from django.utils.text import slugify
 from django.dispatch import receiver
 from django.conf import settings
-
+from pathlib import Path
 
 def validate_mp4_extension(value):
     ext = os.path.splitext(value.name)[1]  # Get the file extension
@@ -41,6 +39,19 @@ class Video(models.Model):
         (FAILED, 'Failed'),
     )
 
+    SOURCE_CHOICES = [
+        ('upload', 'Upload'),
+        ('server', 'Server Path'),
+    ]
+    source_type = models.CharField(max_length=12, choices=SOURCE_CHOICES, default='upload')
+
+    # Existing upload field:
+    # video = models.FileField(upload_to='videos/', blank=True, null=True)
+    video = models.FileField(upload_to="videos",validators=[validate_mp4_extension], blank=True, null=True)
+
+    # New: absolute path to existing file on the server (no copy)
+    server_path = models.CharField(max_length=1024, blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
   
@@ -48,7 +59,6 @@ class Video(models.Model):
     slug = models.SlugField(max_length=50, blank=True)
     description = models.TextField()
   
-    video = models.FileField(upload_to="videos",validators=[validate_mp4_extension])
     thumbnail = models.ImageField(upload_to="thumbnails",null=True,blank=True)
     duration = models.CharField(max_length=20, blank=True,null=True)
     hls = models.CharField(max_length=500,blank=True,null=True)
@@ -63,7 +73,29 @@ class Video(models.Model):
 
     def __str__(self):
         return str(self.name)
-    
+
+    def clean(self):
+        if self.source_type == 'server':
+            if not self.server_path:
+                raise ValidationError("Server-path mode requires 'server_path'.")
+            allowed = (getattr(settings, 'ALLOWED_IMPORT_DIRS', []) or [])
+            # docker-compose DIR with file e.g. /app/Jumanji_Welcome_To_The_Jungle_2017.mp4
+            host_allowed_file = Path(self.server_path).expanduser().resolve()
+            if not allowed:
+                raise ValidationError("No ALLOWED_IMPORT_DIRS configured.")
+            ok = False
+            for base in allowed:
+                # e.g. /home/user/files
+                base_real = Path(base).expanduser().resolve()
+                print ('base_real', base_real)
+                print('real', host_allowed_file)
+                if host_allowed_file.is_file() and (host_allowed_file == base_real or str(host_allowed_file).startswith(str(base_real) + os.sep)):
+                    ok = True
+                    break
+            # check if the file uploaded is a file within an allowed directory
+            if not ok:
+                raise ValidationError("server_path must be a file within an allowed import directory.")
+
     def delete(self):
         # Delete the associated video file before the model instance is deleted
         if self.video:
@@ -212,3 +244,30 @@ def trigger_video_processing(sender, instance, created, **kwargs):
         # Defer celery until DB commit to avoid races
         from content.tasks import process_video
         transaction.on_commit(lambda: process_video.delay(instance.id))
+
+def _safe_delete(filefield):
+    try:
+        if filefield and filefield.name and filefield.storage.exists(filefield.name):
+            filefield.delete(save=False)
+    except Exception:
+        # swallow storage errors; optionally log
+        pass
+
+@receiver(post_delete, sender=Video)
+def video_files_on_delete(sender, instance, **kwargs):
+    # Delete thumbnail file when the whole object is deleted
+    _safe_delete(getattr(instance, "thumbnail", None))
+
+@receiver(pre_save, sender=Video)
+def video_thumbnail_on_change(sender, instance, **kwargs):
+    # On update, if the thumbnail changes OR is cleared, delete the old file
+    if not instance.pk:
+        return
+    try:
+        old = sender.objects.get(pk=instance.pk)
+    except sender.DoesNotExist:
+        return
+    old_file = getattr(old, "thumbnail", None)
+    new_file = getattr(instance, "thumbnail", None)
+    if old_file and old_file != new_file:
+        _safe_delete(old_file)

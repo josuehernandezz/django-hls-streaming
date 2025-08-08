@@ -16,10 +16,6 @@ def home(request):
 
 # @login_required
 def movie_detail_view(request, video_id):
-    image_url = static('img/shrek_2_2004.jpg')
-    full_image_url = request.build_absolute_uri(image_url)
-    print('full_image_url', full_image_url)
-
     video = Video.objects.filter(slug=video_id).first()
     hls_playlist_url = reverse('serve_hls_playlist', args=[video.id])
 
